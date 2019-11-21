@@ -1,0 +1,10 @@
+<div class="row">
+    <ntc-planning-workday-item 
+        *ngFor="let workday of workdays$ | async"
+        [dueDate]="workday.dueDate"
+        [doneTasks]="workday.doneTasks"
+        [remainingTasks]="workday.remainingTasks"
+        (workdayRemoved)="onWorkdayRemoved($event)"
+        class="col-md-4">
+    </ntc-planning-workday-item>
+</div>

@@ -1,0 +1,20 @@
+<div [formGroup]="workdayForm">
+    <div formArrayName="tasks">
+        <ntc-workday-form-tasks-item 
+            *ngFor="let task of tasks.controls;
+                    index as i;
+                    first as isFirst;
+                    last as isLast;" 
+            [index]="i"
+            [isFirst]="isFirst"
+            [isLast]="isLast"
+            [task]="task"
+            
+            (removedTask)="onRemovedTask($event)">
+        </ntc-workday-form-tasks-item>
+    </div>
+    <div class="text-center">
+        <ntc-workday-form-tasks-add (addedTask)="onAddedTask()">
+        </ntc-workday-form-tasks-add>
+    </div>
+</div>

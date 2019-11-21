@@ -1,0 +1,10 @@
+<div class="container-fluid">
+    <div class="row sidenav">
+        <div *ngIf="!isSideNavCollapsed" class="col-md-3 card px-0">
+            <ntc-sidenav></ntc-sidenav>
+        </div>
+        <div class="mt-5" [ngClass]="{'col-md-7 offset-md-1': !isSideNavCollapsed, 'col-md-9 mx-auto': isSideNavCollapsed}">
+            <router-outlet></router-outlet>
+        </div>
+    </div>
+</div>

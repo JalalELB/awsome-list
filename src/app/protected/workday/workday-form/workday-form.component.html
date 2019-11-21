@@ -1,0 +1,12 @@
+<form [formGroup]="workdayForm">
+    <ntc-workday-form-date [dueDate]="dueDate" ></ntc-workday-form-date>
+    <ntc-workday-form-tasks [workdayForm]="workdayForm" [tasks]="tasks" ></ntc-workday-form-tasks>
+    <ntc-workday-form-notes [notes]="notes" ></ntc-workday-form-notes>
+
+    <div class="text-right">
+        <button (click)="submit()" type="submit" class="btn btn-success btn-lg" [disabled]="workdayForm.invalid">
+            Sauvegarder
+        </button>
+    </div>
+    {{ workdayForm.value | json }}
+</form>
