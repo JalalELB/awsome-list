@@ -1,0 +1,56 @@
+<form novalidate [formGroup]="loginForm" (ngSubmit)="submit()" class="card-body" >
+
+    <div class="formGroup">
+        <label for="email">Email</label>
+        <input 
+            id="email" 
+            type="email" 
+            formControlName="email" 
+            class="form-control" 
+            placeholder="Votre email"
+            autocorrect="off" 
+            autocomplete="off" />
+            <small *ngIf="email && email.errors && email.dirty" class="form-text text-muted" >
+                <span [hidden]="!email.errors['required']">
+                    Email requis.<br />
+                </span>
+                <span [hidden]="!email.errors['email']">
+                    Entrez une adresse email valide.<br />
+                </span>
+            </small>
+        </div>
+
+    <div class="formGroup">
+        <label for="password">Mot de passe</label>
+        <input 
+            id="password" 
+            type="password" 
+            formControlName="password" 
+            class="form-control" 
+            placeholder="Votre mot de passe"
+            autocorrect="off" 
+            autocomplete="off" />
+            <small *ngIf="password && password.errors && password.dirty" class="form-text text-muted" >
+                <span [hidden]="!password.errors['required']">
+                    Mot de passe requis.<br />
+                </span>
+                <span [hidden]="!password.errors['minlength']">
+                    Le mot de passe doit faire plus de 6 caractères.<br />
+                </span>
+                <span [hidden]="!password.errors['maxlength']">
+                    Le mot de passe doit faire moins de 20 caractères.<br />
+                </span>
+            </small>
+        </div>
+
+        <p class="text-center py-3">
+            <button 
+                type="submit"
+                class="btn"
+                [disabled]="!loginForm.valid"
+                [ngClass]="{'btn-success': loginForm.valid, 'btn-default': !loginForm.valid}" >
+                Se connecter
+            </button>
+        </p>
+    
+</form>

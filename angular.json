@@ -30,6 +30,7 @@
               "src/assets"
             ],
             "styles": [
+              "./node_modules/ngx-bootstrap/datepicker/bs-datepicker.scss",
               "src/styles.scss"
             ],
             "scripts": []
@@ -97,8 +98,23 @@
             ],
             "scripts": []
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "a52ecf9b-9191-484d-970c-58d285642e19",
+    "schematicCollections": [
+      "@angular-eslint/schematics"
+    ]
   }
 }
