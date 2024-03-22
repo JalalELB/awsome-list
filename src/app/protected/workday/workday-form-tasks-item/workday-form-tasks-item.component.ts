@@ -8,7 +8,6 @@ import { FormGroup } from '@angular/forms';
 })
 export class WorkdayFormTasksItemComponent implements OnInit {
 
-
   @Input() task: FormGroup;
   @Input() index: number;
   @Input() isFirst: boolean;

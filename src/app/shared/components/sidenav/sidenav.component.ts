@@ -47,5 +47,4 @@ export class SidenavComponent implements OnInit, OnDestroy {
     this.router.navigate([page]);
   }
 
-
 }

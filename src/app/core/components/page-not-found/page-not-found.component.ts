@@ -14,5 +14,4 @@ export class PageNotFoundComponent {
   back() {
     this.location.back();
   }
-
 }

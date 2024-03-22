@@ -27,5 +27,4 @@ export class User {
     hasRole(role: string): boolean {
         return this.roles.includes(role);
     }
-
 }
