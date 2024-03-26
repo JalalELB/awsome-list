@@ -21,31 +21,19 @@ export class WorkdaysService {
     private errorService: ErrorService,
     private loaderService: LoaderService) { }
 
+
   public save(workday: Workday) {
     const url = `${environment.firebaseConfig.firestore.baseURL}/workdays?key=${environment.firebaseConfig.apiKey}`;
     const data = this.getWorkdayForFirestore(workday);
-    const jwt: string = localStorage.getItem('token')!;
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${jwt}`
-      })
-    };
-    return this.http.post(url, data, httpOptions);
+    return this.http.post(url, data, {});
   }
+
 
   public update(workday: Workday) {
     const url = `${environment.firebaseConfig.firestore.baseURL}/workdays/${workday.id}?key=${environment.firebaseConfig.apiKey}&currentDocument.exists=true`;
     const data = this.getWorkdayForFirestore(workday);
-    const jwt: string = localStorage.getItem('token')!;
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${jwt}`
-      })
-    };
 
-    return this.http.patch(url, data, httpOptions).pipe(
+    return this.http.patch(url, data, {}).pipe(
       tap(_ => this.toastrService.showToastr({
         category: 'success',
         message: 'Votre journée de travail a été sauvegardée avec succès.'
@@ -55,19 +43,45 @@ export class WorkdaysService {
     );
   }
 
-  getWorkdayByDate(date: string, userId: string): Observable<Workday | null> {
+
+  public remove(workday: Workday) {
+    const url = `${environment.firebaseConfig.firestore.baseURL}/workdays/${workday.id}?key=${environment.firebaseConfig.apiKey}`;
+
+    return this.http.delete(url, {}).pipe(
+      tap(_ => this.toastrService.showToastr({
+        category: 'success',
+        message: 'Votre journée de travail a été supprimé avec succès.'
+      })),
+      catchError(error => this.errorService.handleError(error)),
+      finalize(() => this.loaderService.setLoading(false))
+    );
+  }
+
+  public getWorkdayByUser(userId: string): any {
+    const url = `${environment.firebaseConfig.firestore.baseURL}:runQuery?key=${environment.firebaseConfig.apiKey}`;
+    const data = this.getWorkdayByUserQuery(userId);
+
+    return this.http.post(url, data, {}).pipe(
+      switchMap((workdaysData: any) => {
+        const workdays: Workday[] = [];
+        workdaysData.forEach((data: any) => {
+          if (data && data.document) {
+            const workday: Workday = this.getWorkdayFromFirestore(data.document.name, data.document.fields);
+            workdays.push(workday);
+          }
+        })
+        return of(workdays);
+      }),
+      catchError(error => this.errorService.handleError(error))
+    );
+  }
+
+
+  public getWorkdayByDate(date: string, userId: string): Observable<Workday | null> {
     const url = `${environment.firebaseConfig.firestore.baseURL}:runQuery?key=${environment.firebaseConfig.apiKey}`;
     const data = this.getSructuredQuery(date, userId);
-    const jwt: string = localStorage.getItem('token')!;
 
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${jwt}`
-      })
-    };
-
-    return this.http.post(url, data, httpOptions).pipe(
+    return this.http.post(url, data, {}).pipe(
       switchMap((data: any) => {
         const document = data[0].document;
         if (!document) {
@@ -134,6 +148,7 @@ export class WorkdaysService {
     }
   }
 
+
   private getSructuredQuery(date: string, userId: string): any {
     return {
       'structuredQuery': {
@@ -166,6 +181,7 @@ export class WorkdaysService {
     };
   }
 
+
   private getWorkdayFromFirestore(name: string, fields: any): Workday {
     const tasks: Task[] = [];
     const workdayId: string = name.split('/')[6];
@@ -188,6 +204,29 @@ export class WorkdaysService {
       dueDate: fields.dueDate.integerValue,
       tasks: tasks
     });
-
   }
+
+  private getWorkdayByUserQuery(userId: string): any {
+    return {
+      'structuredQuery': {
+        'from': [{
+          'collectionId': 'workdays'
+        }],
+        'where': {
+          'fieldFilter': {
+            'field': { 'fieldPath': 'userId' },
+            'op': 'EQUAL',
+            'value': { 'stringValue': userId }
+          }
+        },
+        "orderBy": [{
+          "field": {
+            "fieldPath": "dueDate"
+          },
+          "direction": "DESCENDING"
+        }]
+      }
+    };
+  }
+
 }

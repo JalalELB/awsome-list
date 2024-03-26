@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { WorkdaysService } from 'src/app/core/services/workdays.service';
 import { User } from 'src/app/shared/models/user';
@@ -22,12 +22,19 @@ export class WorkdayFormComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private workdaysService: WorkdaysService,
-    private authService: AuthService) { }
+    private authService: AuthService,
+    private route: ActivatedRoute) { }
 
 
   ngOnInit() {
-    this.workdayId = '';
-    this.workdayForm = this.createWorkdayForm();
+    this.route.queryParams.subscribe(params => {
+      this.workdayId = '';
+      this.workdayForm = this.createWorkdayForm();
+      if (params['date']) {
+        const date: Date = new Date(+params['date'] * 1000); // On multiplie par 1000 le timestamp reçu pour l'adapter au format des timestamp de JavaScript.
+        this.dueDate.setValue(date);
+      }
+    });
   }
 
 

@@ -39,11 +39,7 @@ export class AuthService {
       returnSecureToken: true,
     };
 
-    const httpOptions = {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-    }
-
-    return this.http.post<User>(url, data, httpOptions).pipe(
+    return this.http.post<User>(url, data, {}).pipe(
       switchMap((data: any) => {
         const jwt: string = data.idToken;
         const user = new User({
@@ -52,7 +48,7 @@ export class AuthService {
           name: name
         });
         this.saveAuthData(data.localId, jwt);
-        return this.userService.save(user, jwt);
+        return this.userService.save(user);
       }),
       tap(user => this.user.next(user)),
       tap(_ => this.logoutTimer(3600)),
@@ -74,16 +70,12 @@ export class AuthService {
       returnSecureToken: true,
     };
 
-    const httpOptions = {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-    }
-
-    return this.http.post<User>(url, data, httpOptions).pipe(
+    return this.http.post<User>(url, data, {}).pipe(
       switchMap((data: any) => {
         const userId: string = data.localId;
         const jwt: string = data.idToken;
         this.saveAuthData(data.localId, jwt);
-        return this.userService.get(userId, jwt);
+        return this.userService.get(userId);
       }),
       tap(user => this.user.next(user)),
       tap(_ => this.logoutTimer(3600)),
@@ -101,12 +93,12 @@ export class AuthService {
         category: 'success',
         message: 'Votre modification a été effectuée avec succès',
       })),
-        catchError(error => this.errorService.handleError(error)),
-        finalize(() => this.loaderService.setLoading(false))
-      );
+      catchError(error => this.errorService.handleError(error)),
+      finalize(() => this.loaderService.setLoading(false))
+    );
   }
 
-  
+
   get currentUser(): User | null {
     return this.user.getValue();
   }
@@ -123,7 +115,6 @@ export class AuthService {
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
     this.user.next(null);
-    console.info('Logouting !')
     this.router.navigate(['/login']);
   }
 
